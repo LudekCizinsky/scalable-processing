@@ -117,7 +117,7 @@ def eda(bs, rs):
 ```
 
 I started by selecting relevant businesses, i.e. `Restaurants`. Note that
-despite this, there remained still business which have both category `Restaurant` and for example `Dentist`. Then I assigned each business to its corresponding reviews. I started by analyzing how many of these reviews includes some form of word 'authenticity', surprisingly it was
+despite this, there remained still business which have both category `Restaurant` and for example `Dentist`, since these were rarer, I decided not to spend more time filtering these out. Then I assigned each business to its corresponding reviews. I started by analyzing how many of these reviews includes some form of word 'authenticity', surprisingly it was
 only around `2.5 %`. I then continued by analysing reviews which include word
 "legitimate". More specifically, I looked at categories which are associated
 with these reviews. Here are top categories found:
@@ -161,4 +161,17 @@ chips places. This can be seen from the `count_all` column. If we would only loo
 ```
 
 We can see that most legitimate cuisines seem to be the ones where we would
-expect the bias except from the `Mexican` or `Chinese`. Therefore, this might be an example which would contradict the findings in the [article](https://ny.eater.com/2019/1/18/18183973/authenticity-yelp-reviews-white-supremacy-trap).  
+expect the bias except from the `Mexican` or `Chinese`. Therefore, this might be an example which would contradict the findings in the [article](https://ny.eater.com/2019/1/18/18183973/authenticity-yelp-reviews-white-supremacy-trap). 
+
+Then I tried to explore the problem geographic wise. I looked all possible
+combinations of the values of columns `country`, `state` and `isThereAuthLang`
+(indicating presence of `authenticity` language within a review). Interestingly,
+a state with the biggest number of reviews is Nevada, it then naturally has also
+the biggest number of reviews which include and do NOT include authenticity
+language, it then naturally has also the biggest number of reviews which include
+and do NOT include authenticity language. It was then followed by another
+`southern` state - `Arizona` - in terms of the number of reviews containing
+authenticity language. However, third state is in `Canada`, namely `Ontario`.
+The fact that the first two states are from the south might indicate some bias
+given the history of southern states.
+
