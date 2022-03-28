@@ -1,7 +1,7 @@
-## Intro
+# Intro
 In this document, I answer the questions which are part of the assignment.
 
-## Specific DataFrame Queries
+# Specific DataFrame Queries
 
 I first loaded the data using:
 
@@ -63,9 +63,9 @@ def q5(rs, us):
     rs_us = rs.join(us, "user_id").groupby("user_id").mean("stars").sort("avg(stars)")
 ```
 
-## Authenticity Study
+# Authenticity Study
 
-### Data exploration
+## Data exploration
 First, here is the code used for this phase for reference:
 
 ```py
@@ -175,7 +175,19 @@ authenticity language. However, third state is in `Canada`, namely `Ontario`.
 The fact that the first two states are from the south might indicate some bias
 given the history of southern states.
 
-### Hypothesis testing
+## Hypothesis testing
+
+Below, I discuss my approaches towards hypothesis testing. I decided to try two
+approaches:
+
+1. Naive approach
+2. Advanced approach
+
+The aim was to first experiment with a naive approach and then try more advance
+one if there will be time. In the below sections, I explained the methodology
+and discuss the results.
+
+### Naive approach
 #### Methodology
 
 To test my hypothesis, I started with the following assumption:
@@ -259,3 +271,4 @@ are a lot of reviews and as such we would also need a significcant amount of
 examples of either positive or negative reviews. Finally, to conclude, given the
 above explained methodology and results, the conclusion is that the given hypothesis
 can not be confirmed.
+
