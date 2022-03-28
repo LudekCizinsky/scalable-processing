@@ -172,7 +172,5 @@ def main():
     rest_rs = eda(bs, rs)
 
     # ------- 3.2.1 Hypothesis testing
-    
-
-
+    ht(rest_rs)   
 
