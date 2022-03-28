@@ -117,6 +117,40 @@ def eda(bs, rs):
     rest_rs_cube.toPandas().to_csv('data/location_count.csv')
     print("Done!\n")
 
+    return rest_rs
+
+# ----------------- Hypothesis testing
+
+def ht(rest_rs):
+
+  # Add column mentioning whether the review includes some NEGATIVE words
+  rest_rs = rest_rs.withColumn("isThereNeg", rest_rs.text.rlike('(dirty)|(cheap)|(rude)'))
+
+  # Add column mentioning whether the review includes some POSITIVE words
+  rest_rs = rest_rs.withColumn("isTherePos", rest_rs.text.rlike('(nice)|(fresh)|(eleg)'))
+
+  # Get reviews with authentic language and negative/positive language
+  rest_rs_neg = rest_rs.filter((rest_rs.isThereAuth) & (rest_rs.isThereNeg))
+  rest_rs_pos = rest_rs.filter((rest_rs.isThereAuth) & (rest_rs.isTherePos))
+
+  # Look at the categories
+  # * All
+  cat_count_all = rest_rs.withColumn('category', f.explode(f.split(f.col('categories'), ', '))).groupBy('category').agg({"category": "count"}).withColumnRenamed("count(category)", "count_all")
+
+  # * Negative
+  rest_rs_neg_count = rest_rs_neg.withColumn('category', f.explode(f.split(f.col('categories'), ', '))).groupBy('category').agg({"category": "count"}).withColumnRenamed("count(category)", "c_neg")
+  rest_rs_neg_count = rest_rs_neg_count.join(cat_count_all, "category")
+  rest_rs_neg_count = rest_rs_neg_count.withColumn("normalized", (rest_rs_neg_count.c_neg/rest_rs_neg_count.count_all)*100)
+
+  # * Positive
+  rest_rs_pos_count = rest_rs_pos.withColumn('category', f.explode(f.split(f.col('categories'), ', '))).groupBy('category').agg({"category": "count"}).withColumnRenamed("count(category)", "c_pos")
+  rest_rs_pos_count = rest_rs_pos_count.join(cat_count_all, "category")
+  rest_rs_pos_count = rest_rs_pos_count.withColumn("normalized", (rest_rs_pos_count.c_pos/rest_rs_pos_count.count_all)*100)
+
+  # Save the results
+  rest_rs_neg_count.orderBy("normalized", ascending=False).toPandas().to_csv('data/ht_neg_cat_count.csv')
+  rest_rs_pos_count.orderBy("normalized", ascending=False).toPandas().to_csv('data/ht_pos_cat_count.csv')
+
 
 def main():
 
@@ -134,5 +168,11 @@ def main():
     a5 = q5(rs, us)
 
     # ------------ 3.2 Authenticity Study
+    # ------- 3.2.1 Data exploration
+    rest_rs = eda(bs, rs)
+
+    # ------- 3.2.1 Hypothesis testing
+    
+
 
 

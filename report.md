@@ -175,3 +175,43 @@ authenticity language. However, third state is in `Canada`, namely `Ontario`.
 The fact that the first two states are from the south might indicate some bias
 given the history of southern states.
 
+### Hypothesis testing
+#### Methodology
+
+To test my hypothesis, I started with the following assumption:
+
+> I define authentic review as a review which contains any form of either of the following words: legitimate, authentic.
+
+Further, I defined a review to be negative, if it contains any of the following
+words:
+
+> dirty, cheap, rude
+
+Similarly, I then defined positive review, if it contains any of the following
+words (or their form):
+
+> nice, fresh, eleg
+
+In order to confirm the hypothesis, I then assume that:
+
+> Most common categories of authentic and negative reviews will be of non-western cuisines such as Mexican or Chinese. 
+Similarly, most common categories of authentic and positive reviews will be of western cuisines. 
+
+It is important to note, however, that this approach does not take into account
+the fact that for example user might be using word authentic independly of word
+cheap. Consider this sentence:
+
+> The Chinese restaurant was great with its authentic cheap food.
+
+where the word authentic is used in the connection with cheap, whereas here is
+the opposite example:
+
+> The Chinese restaurant was great, especially its authentic old venue. The food was also relatively cheap given the provided value.
+
+Therefore, the results should be interpretted with this fact in mind. Another
+limitation of this methodology is that the list of positive and negative words
+is not exhaustive.
+
+#### Results
+
+
