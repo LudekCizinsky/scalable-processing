@@ -151,7 +151,6 @@ def ht(rest_rs):
   rest_rs_neg_count.orderBy("normalized", ascending=False).toPandas().to_csv('data/ht_neg_cat_count.csv')
   rest_rs_pos_count.orderBy("normalized", ascending=False).toPandas().to_csv('data/ht_pos_cat_count.csv')
 
-
 def main():
 
     # ------------ 3.1 Specific DataFrame Queries
@@ -172,5 +171,9 @@ def main():
     rest_rs = eda(bs, rs)
 
     # ------- 3.2.1 Hypothesis testing
-    ht(rest_rs)   
+    ht(rest_rs)
+
+    # ------------ 3.3 Bonus question
+    rs = spark.read.parquet("/datasets/yelp/parquet/review.parquet")
+
 

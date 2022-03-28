@@ -210,7 +210,7 @@ In order to confirm the hypothesis, I then assume that:
 Similarly, most common categories of authentic and positive reviews will be of western cuisines. 
 
 It is important to note, however, that this approach does not take into account
-the fact that for example user might be using word authentic independly of word
+the fact that for example user might be using word authentic independently of the word
 cheap. Consider this sentence:
 
 > The Chinese restaurant was great with its authentic cheap food.
@@ -245,7 +245,7 @@ The score you see was computed by dividing the number of authentic and negative
 reviews from given category by the number of reviews in that category. This was
 to account for the fact that different categories might have way more reviews
 than others. This score was then mutiplied by 100 for a better readability. We
-can see that eastern european cusine seems to be the most common one among
+can see that for example cusines from central america (honudran, salvadoran) seem to be the most common one among
 negative authentic reviews. However, we can also see that we have German and
 Austrian cuisine in the top. Therefore, this would contradict the hypothesis. 
 Similarly, we can now look at positive authentic reviews:
@@ -261,14 +261,27 @@ Similarly, we can now look at positive authentic reviews:
 >>> Egyptian            : 2.84
 ```
 
-From the above results, we can see that eastern european is also among the top
+From the above results, we can see that for example honduran (central america) is also among the top
 and as such this seems to suggest that there is no systematic bias towards
-cusines of poorer countries. I would like to emphasize that perhaps a possible explanation why I obtained such
+cusines from poorer countries. I would like to emphasize that perhaps a possible explanation why I obtained such
 results is also a fact that there is simply very small number of for example
-reviews of Slovakian cuisine and as such even having few negative or posive
-revuews might still yield a great number compare to Italian cuisine where there
+reviews of Honudran cuisine and as such even having few negative or posive
+reviews might still yield a great number compare to Italian cuisine where there
 are a lot of reviews and as such we would also need a significcant amount of
 examples of either positive or negative reviews. Finally, to conclude, given the
-above explained methodology and results, the conclusion is that the given hypothesis
-can not be confirmed.
+above explained methodology and results, the conclusion is that there is no
+systematic bias where people would make use of the authenticity to refer to
+different type of experience (positive, negative) based on the type of cuisine.
 
+
+# Bonus question: parquet vs json
+
+Loading data from `parquet` is way faster. I believe the reason for this is that
+it is already in column format which means that computer can quikcly read the
+entire column from disk instead of going row by row. I tested this on the
+reviews dataset, and there are in total around 6 to 7 million rows compare to
+just a few columns. And since column data is stored close to each other on the
+disk, the loading might be signifficantly sped up. Once the data was loaded,
+I tried to use filter function, but have not been able to see any difference.
+This is because no matter how we load it, the dataset is represented the same in
+the memory.
