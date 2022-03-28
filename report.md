@@ -214,4 +214,48 @@ is not exhaustive.
 
 #### Results
 
+Given the above settings, I then computed normalized category counts for
+positive and negative reviews. Let's start with the top 3 results for negative
+reviews:
 
+```
+>>> Eastern European    : 3.37
+>>> Honduran            : 2.47
+>>> Slovakian           : 2.04
+>>> Shanghainese        : 1.76
+>>> Salvadoran          : 0.94
+>>> Burmese             : 0.91
+>>> German              : 0.89
+>>> Austrian            : 0.88
+```
+
+The score you see was computed by dividing the number of authentic and negative
+reviews from given category by the number of reviews in that category. This was
+to account for the fact that different categories might have way more reviews
+than others. This score was then mutiplied by 100 for a better readability. We
+can see that eastern european cusine seems to be the most common one among
+negative authentic reviews. However, we can also see that we have German and
+Austrian cuisine in the top. Therefore, this would contradict the hypothesis. 
+Similarly, we can now look at positive authentic reviews:
+
+```
+>>> Honduran            : 5.94
+>>> Nicaraguan          : 5.82
+>>> Shanghainese        : 5.66
+>>> Uzbek               : 3.44
+>>> Eastern European    : 3.37
+>>> Sicilian            : 3.09
+>>> Puerto Rican        : 2.92
+>>> Egyptian            : 2.84
+```
+
+From the above results, we can see that eastern european is also among the top
+and as such this seems to suggest that there is no systematic bias towards
+cusines of poorer countries. I would like to emphasize that perhaps a possible explanation why I obtained such
+results is also a fact that there is simply very small number of for example
+reviews of Slovakian cuisine and as such even having few negative or posive
+revuews might still yield a great number compare to Italian cuisine where there
+are a lot of reviews and as such we would also need a significcant amount of
+examples of either positive or negative reviews. Finally, to conclude, given the
+above explained methodology and results, the conclusion is that the given hypothesis
+can not be confirmed.
