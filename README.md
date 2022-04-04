@@ -44,3 +44,10 @@ pyspark < main.py
 
 If you have any questions or find any bugs, please reach me at `luci@itu.dk`.
 
+## Utilities
+For convenience, I have created a few bash scripts that you can use with your
+settings, checkout `utils.sh`. To use the commands, simply run:
+
+```bash
+source util.sh
+```

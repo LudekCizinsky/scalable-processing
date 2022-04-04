@@ -112,14 +112,14 @@ def eda(bs, rs):
     # Show sorted according to the count legit
     print(">> Count of the categories of reviews which include word 'legit':")
     cat_count_legit_all.sort("count_legit", ascending=False).toPandas().to_csv('data/category_count.csv')
-    print("Done!\n")
+    print("Done! See the result in 'data/category_count.csv'.\n")
 
     # ---- Is there a difference in the amount of authenticity language used in the different areas?
     print(">> Count of the reviews, which are using authenticity lang, per state and per city:")
     rest_rs = rest_rs.withColumn("isThereAuth", rest_rs.text.rlike('(legitimate)|(authentic)'))
     rest_rs_cube = rest_rs.cube("state", "city", "isThereAuth").count().orderBy("count", ascending=False)
     rest_rs_cube.toPandas().to_csv('data/location_count.csv')
-    print("Done!\n")
+    print("Done! See the result in 'data/location_count.csv'.\n")
 
     return rest_rs
 

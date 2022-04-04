@@ -1,5 +1,6 @@
 # Intro
-In this document, I answer the questions which are part of the assignment.
+In this report, I answer the questions which are asked in the assignment. I also
+provide these questions as part of the doc strings for reference.
 
 # Specific DataFrame Queries
 
@@ -221,17 +222,41 @@ chips places. This can be seen from the `count_all` column. If we would only loo
 We can see that most legitimate cuisines seem to be the ones where we would
 expect the bias except from the `Mexican` or `Chinese`. Therefore, this might be an example which would contradict the findings in the [article](https://ny.eater.com/2019/1/18/18183973/authenticity-yelp-reviews-white-supremacy-trap). 
 
-Then I tried to explore the problem geographic wise. I looked all possible
+Finally, I tried to explore the problem geographic wise. I looked all possible
 combinations of the values of columns `country`, `state` and `isThereAuthLang`
 (indicating presence of `authenticity` language within a review). Interestingly,
 a state with the biggest number of reviews is Nevada, it then naturally has also
 the biggest number of reviews which include and do NOT include authenticity
-language, it then naturally has also the biggest number of reviews which include
-and do NOT include authenticity language. It was then followed by another
-`southern` state - `Arizona` - in terms of the number of reviews containing
+language. Nevada was then followed by another `southern` state - `Arizona` -
+in terms of the number of reviews containing
 authenticity language. However, third state is in `Canada`, namely `Ontario`.
 The fact that the first two states are from the south might indicate some bias
-given the history of southern states.
+given the history of southern American states. (south vs north)
+
+To **summarize**, in this exploratory phase, I found out following key
+information:
+- Out of all reviews, only 2.5 % include some form of the word `authentic`. This
+  should be taken into account when making conclusions as the sample size is
+  signifficantly smaller.
+
+- When looking at the number of reviews which contain the specific word
+  indiciating use of authentic language, one must also account for the fact that
+  certain categories are way more common (e.g. Pizza) and as such, it will be
+  associated with more reviews.
+
+- Looking at the `cuisine` categories, we could say that word `legitimate` occurs
+  most frequently in the case of `American` cuisine, however, after accounting
+  for the total number of reviews, we see that it is rather `Asian` and `Mexican`
+  cuisines which are relatively more frequent. This might contradict the article. On the other hand, it is important to admit, that here we only look at simple
+  occurence of the word 'legitimate', yet we do not know specifically in which
+  context it has been used compare to the author of the article who examined
+  each review.
+
+- Looking at the problem geographic wise, there seem to be a pattern where
+  southern american states such as `Nevada` or `Arizona` lead in the absolute
+  count of reviews which contain `authentic language`. Yet, more detailed
+  analysis would needed to be done in order to find out, `how` is `authentic`
+  language actually used.
 
 ## Hypothesis testing
 
