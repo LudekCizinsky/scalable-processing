@@ -11,7 +11,9 @@ rs = spark.read.json("/datasets/yelp/review.json")
 us = spark.read.json("/datasets/yelp/user.json")
 ```
 
-I then ran the following queries:
+I then ran the queries specified below.
+
+## Q1
 
 ```py
 def q1(bs):
@@ -21,7 +23,18 @@ def q1(bs):
     """
 
     return bs.agg({'review_count': 'sum'})
+```
 
+The return object is spark dataframe, I then ran `collect()` method and
+obtained:
+
+```
+[Row(sum(review_count)=6459906)]
+```
+
+## Q2
+
+```py
 def q2(bs):
     """
     Analyze business.json to find all businesses that have received 5 stars and that have
@@ -30,7 +43,10 @@ def q2(bs):
     """
 
     return bs.filter((bs.stars == 5) & (bs.review_count >= 1000)).select("name", "stars", "review_count")
+```
 
+## Q3
+```py
 def q3(us):
     """
     Analyze user.json to find the influencers who have written more than 1000 reviews. The
@@ -38,8 +54,11 @@ def q3(us):
     """
     
     return us.filter(us.review_count > 1000).select("user_id")
+```
 
+## Q4
 
+```py
 def q4(bs, rs, a3):
     """
     Analyze review.json, business.json, and a view created from your answer to Q3 to
@@ -54,13 +73,19 @@ def q4(bs, rs, a3):
 
     
     return bs_inf_count.filter(bs_inf_count.countd > 5)
+```
 
+## Q5
+
+```
 def q5(rs, us):
     """
     Analyze review.json and user.json to find an ordered list of users based on the average star counts they have given in all their reviews.
     """
     
     rs_us = rs.join(us, "user_id").groupby("user_id").mean("stars").sort("avg(stars)")
+
+    return rs_us
 ```
 
 # Authenticity Study
