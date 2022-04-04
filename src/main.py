@@ -1,5 +1,6 @@
 # ---------------------- Spark setup
 from collections import defaultdict
+from timeit import default_timer as timer
 
 import pyspark
 from pyspark.sql import SparkSession
@@ -9,7 +10,7 @@ import pyspark.sql.functions as f
 conf=SparkConf()
 conf.set("spark.executor.memory", "2G")
 conf.set("spark.executor.instances", "4")
-
+conf.setLogLevel("ERROR")
 
 spark = SparkSession.builder \
                     .appName('ludek-cizinsky-assgn-02') \
@@ -155,10 +156,12 @@ def ht(rest_rs):
 def main():
 
     print("# ------------ 3.0 Loading data")
+    start = timer() 
     bs = spark.read.json("/datasets/yelp/business.json")
     rs = spark.read.json("/datasets/yelp/review.json")
     us = spark.read.json("/datasets/yelp/user.json")
-    print("> Done!")
+    total = round(timer() - start, 2)
+    print(f"> Done! ({total} s)")
 
     print("# ------------ 3.1 Specific DataFrame Queries") 
     a1 = q1(bs)
@@ -168,16 +171,28 @@ def main():
     a5 = q5(rs, us)
     print("> Done!")
 
-    # ------------ 3.2 Authenticity Study
-    # ------- 3.2.1 Data exploration
+    print("# ------------ 3.2 Authenticity Study")
+    print("# ------- 3.2.1 Data exploration")
+    start = timer() 
     rest_rs = eda(bs, rs)
+    total = round(timer() - start, 2)
+    print(f"> Done! ({total} s)")
 
-    # ------- 3.2.1 Hypothesis testing
+
+    print("# ------- 3.2.1 Hypothesis testing")
+    start = timer()
     ht(rest_rs)
+    total = round(timer() - start, 2)
+    print(f"> Done! ({total} s)")
 
-    # ------------ 3.3 Bonus question
-    rs = spark.read.parquet("/datasets/yelp/parquet/review.parquet")
-
+    print("# ------------ 3.3 Loading data in the parquet format")
+    start = timer()
+    bspq = spark.read.parquet("/datasets/yelp/parquet/business.parquet")
+    rspq = spark.read.parquet("/datasets/yelp/parquet/review.parquet")
+    uspq = spark.read.parquet("/datasets/yelp/parquet/user.parquet")
+    total = round(timer() - start, 2)
+    print(f"> Done! ({total} s)") 
 
 if __name__ == "__main__":
     main()
+
