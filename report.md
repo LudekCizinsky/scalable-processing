@@ -176,7 +176,7 @@ def eda(bs, rs):
 ```
 
 I started by selecting relevant businesses, i.e. `Restaurants`. Note that
-despite this, there remained still business which have both category `Restaurant` and for example `Dentist`, since these were rarer, I decided not to spend more time filtering these out. Then I assigned each business to its corresponding reviews. I started by analyzing how many of these reviews includes some form of word 'authenticity', surprisingly it was
+despite this, there remained still business which have both category `Restaurant` and for example `Dentist`, since these were rarer, I decided not to spend more time filtering these out. Then I assigned each business to its corresponding reviews. I started by analyzing how many of these reviews includes some form of word `authenticity`, surprisingly it was
 only around `2.5 %`. I then continued by analysing reviews which include word
 "legitimate". More specifically, I looked at categories which are associated
 with these reviews. Here are top categories found:
@@ -248,14 +248,14 @@ information:
   most frequently in the case of `American` cuisine, however, after accounting
   for the total number of reviews, we see that it is rather `Asian` and `Mexican`
   cuisines which are relatively more frequent. This might contradict the article. On the other hand, it is important to admit, that here we only look at simple
-  occurence of the word 'legitimate', yet we do not know specifically in which
+  occurence of the word `legitimate`, yet we do not know specifically in which
   context it has been used compare to the author of the article who examined
   each review.
 
 - Looking at the problem geographic wise, there seem to be a pattern where
   southern american states such as `Nevada` or `Arizona` lead in the absolute
   count of reviews which contain `authentic language`. Yet, more detailed
-  analysis would needed to be done in order to find out, `how` is `authentic`
+  analysis would be needed to find out, how is `authentic`
   language actually used.
 
 ## Hypothesis testing
@@ -264,13 +264,49 @@ Below, I discuss my approaches towards hypothesis testing. I decided to try two
 approaches:
 
 1. Naive approach
-2. Advanced approach
+2. Advanced approach (at the time of writing this report, not implemented)
 
 The aim was to first experiment with a naive approach and then try more advance
 one if there will be time. In the below sections, I explained the methodology
 and discuss the results.
 
 ### Naive approach
+
+#### Code
+Here is the code for reference:
+
+```py
+def ht(rest_rs):
+
+    # Add column mentioning whether the review includes some NEGATIVE words
+    rest_rs = rest_rs.withColumn("isThereNeg", rest_rs.text.rlike('(dirty)|(cheap)|(rude)'))
+
+    # Add column mentioning whether the review includes some POSITIVE words
+    rest_rs = rest_rs.withColumn("isTherePos", rest_rs.text.rlike('(nice)|(fresh)|(eleg)'))
+
+    # Get reviews with authentic language and negative/positive language
+    rest_rs_neg = rest_rs.filter((rest_rs.isThereAuth) & (rest_rs.isThereNeg))
+    rest_rs_pos = rest_rs.filter((rest_rs.isThereAuth) & (rest_rs.isTherePos))
+
+    # Look at the categories
+    # * All
+    cat_count_all = rest_rs.withColumn('category', f.explode(f.split(f.col('categories'), ', '))).groupBy('category').agg({"category": "count"}).withColumnRenamed("count(category)", "count_all")
+
+    # * Negative
+    rest_rs_neg_count = rest_rs_neg.withColumn('category', f.explode(f.split(f.col('categories'), ', '))).groupBy('category').agg({"category": "count"}).withColumnRenamed("count(category)", "c_neg")
+    rest_rs_neg_count = rest_rs_neg_count.join(cat_count_all, "category")
+    rest_rs_neg_count = rest_rs_neg_count.withColumn("normalized", (rest_rs_neg_count.c_neg/rest_rs_neg_count.count_all)*100)
+
+    # * Positive
+    rest_rs_pos_count = rest_rs_pos.withColumn('category', f.explode(f.split(f.col('categories'), ', '))).groupBy('category').agg({"category": "count"}).withColumnRenamed("count(category)", "c_pos")
+    rest_rs_pos_count = rest_rs_pos_count.join(cat_count_all, "category")
+    rest_rs_pos_count = rest_rs_pos_count.withColumn("normalized", (rest_rs_pos_count.c_pos/rest_rs_pos_count.count_all)*100)
+
+    # Save the results
+    rest_rs_neg_count.orderBy("normalized", ascending=False).toPandas().to_csv('data/ht_neg_cat_count.csv')
+    rest_rs_pos_count.orderBy("normalized", ascending=False).toPandas().to_csv('data/ht_pos_cat_count.csv')
+```
+
 #### Methodology
 
 To test my hypothesis, I started with the following assumption:
@@ -307,10 +343,10 @@ Therefore, the results should be interpretted with this fact in mind. Another
 limitation of this methodology is that the list of positive and negative words
 is not exhaustive.
 
-#### Results
+#### Results and discussion
 
 Given the above settings, I then computed normalized category counts for
-positive and negative reviews. Let's start with the top 3 results for negative
+positive and negative reviews. Let's start with the top results for `negative`
 reviews:
 
 ```
@@ -328,10 +364,10 @@ The score you see was computed by dividing the number of authentic and negative
 reviews from given category by the number of reviews in that category. This was
 to account for the fact that different categories might have way more reviews
 than others. This score was then mutiplied by 100 for a better readability. We
-can see that for example cusines from central america (honudran, salvadoran) seem to be the most common one among
-negative authentic reviews. However, we can also see that we have German and
-Austrian cuisine in the top. Therefore, this would contradict the hypothesis. 
-Similarly, we can now look at positive authentic reviews:
+can see that for example cusines from central america (`Honduran`, `Salvadoran`) seem to be the most common one among
+negative authentic reviews. However, we can also see that we have `German` and
+`Austrian` cuisine in the top. Therefore, this would contradict the hypothesis. 
+Similarly, we can now look at `positive` authentic reviews:
 
 ```
 >>> Honduran            : 5.94
@@ -344,27 +380,31 @@ Similarly, we can now look at positive authentic reviews:
 >>> Egyptian            : 2.84
 ```
 
-From the above results, we can see that for example honduran (central america) is also among the top
+From the above results, we can see that for example `Honduran` (central america) is also among the top
 and as such this seems to suggest that there is no systematic bias towards
-cusines from poorer countries. I would like to emphasize that perhaps a possible explanation why I obtained such
+cuisines from poorer countries. I would like to emphasize that perhaps a possible explanation why I obtained such
 results is also a fact that there is simply very small number of for example
-reviews of Honudran cuisine and as such even having few negative or posive
+reviews of Honduran cuisine and as such even having few negative or positive
 reviews might still yield a great number compare to Italian cuisine where there
-are a lot of reviews and as such we would also need a significcant amount of
-examples of either positive or negative reviews. Finally, to conclude, given the
-above explained methodology and results, the conclusion is that there is no
-systematic bias where people would make use of the authenticity to refer to
-different type of experience (positive, negative) based on the type of cuisine.
+are a lot of reviews and as such we would also need a significant amount of
+examples of either positive or negative reviews.
 
+#### Conclusion
+To conclude, given the above explained methodology and results, the conclusion
+is that there is no systematic bias where people would make use of the
+authenticity to refer to different type of experience (positive, negative) based
+on the type of cuisine. With that being said, it is very important to emphasize
+and take into consideration the many limitations of the methodology. More
+specifically, the major limitation of the methodology is that it completely ignores context in which selected words are being used. 
 
 # Bonus question: parquet vs json
 
 Loading data from `parquet` is way faster. I believe the reason for this is that
-it is already in column format which means that computer can quikcly read the
+it is already in column format which means that computer can quickly read the
 entire column from disk instead of going row by row. I tested this on the
 reviews dataset, and there are in total around 6 to 7 million rows compare to
 just a few columns. And since column data is stored close to each other on the
-disk, the loading might be signifficantly sped up. Once the data was loaded,
+disk, the loading might be significantly faster. Once the data was loaded,
 I tried to use filter function, but have not been able to see any difference.
-This is because no matter how we load it, the dataset is represented the same in
-the memory.
+I would assume that this is because no matter how we load it, the dataset is represented the same in the memory.
+
