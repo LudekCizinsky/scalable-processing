@@ -10,7 +10,6 @@ import pyspark.sql.functions as f
 conf=SparkConf()
 conf.set("spark.executor.memory", "2G")
 conf.set("spark.executor.instances", "4")
-conf.setLogLevel("ERROR")
 
 spark = SparkSession.builder \
                     .appName('ludek-cizinsky-assgn-02') \
@@ -112,14 +111,14 @@ def eda(bs, rs):
     # Show sorted according to the count legit
     print(">> Count of the categories of reviews which include word 'legit':")
     cat_count_legit_all.sort("count_legit", ascending=False).toPandas().to_csv('data/category_count.csv')
-    print(">>> Done! See the result in 'data/category_count.csv'.\n")
+    print("See the result in 'data/category_count.csv'.\n")
 
     # ---- Is there a difference in the amount of authenticity language used in the different areas?
     print(">> Count of the reviews, which are using authenticity lang, per state and per city:")
     rest_rs = rest_rs.withColumn("isThereAuth", rest_rs.text.rlike('(legitimate)|(authentic)'))
     rest_rs_cube = rest_rs.cube("state", "city", "isThereAuth").count().orderBy("count", ascending=False)
     rest_rs_cube.toPandas().to_csv('data/location_count.csv')
-    print(">>> Done! See the result in 'data/location_count.csv'.\n")
+    print("See the result in 'data/location_count.csv'.\n")
 
     return rest_rs
 
@@ -154,11 +153,11 @@ def ht(rest_rs):
     # Save the results
     print(">> Show the cuisines with the highest relative frequency of negative authentic reviews:")
     rest_rs_neg_count.orderBy("normalized", ascending=False).toPandas().to_csv('data/ht_neg_cat_count.csv')
-    print(f">>> Done! See the results in 'data/ht_neg_cat_count.csv'.\n")
+    print(f"See the results in 'data/ht_neg_cat_count.csv'.\n")
 
     print(">> Show the cuisines with the highest relative frequency of positive authentic reviews:")
     rest_rs_pos_count.orderBy("normalized", ascending=False).toPandas().to_csv('data/ht_pos_cat_count.csv')
-    print(f">>> Done! See the results in 'data/ht_pos_cat_count.csv'.")
+    print(f"See the results in 'data/ht_pos_cat_count.csv'.\n")
 
 
 def main():
@@ -169,7 +168,7 @@ def main():
     rs = spark.read.json("/datasets/yelp/review.json")
     us = spark.read.json("/datasets/yelp/user.json")
     total = round(timer() - start, 2)
-    print(f"> Done! ({total} s)\n")
+    print(f"> Loading json data done. ({total} s)\n")
 
     print("# ------------ 3.1 Specific DataFrame Queries") 
     start = timer()
@@ -179,21 +178,21 @@ def main():
     a4 = q4(bs, rs, a3)
     a5 = q5(rs, us)
     total = round(timer() - start, 2)
-    print(f"> Done! ({total} s)\n")
+    print(f"> Building queries done. ({total} s)\n")
 
     print("# ------------ 3.2 Authenticity Study")
     print("# ------- 3.2.1 Data exploration")
     start = timer() 
     rest_rs = eda(bs, rs)
     total = round(timer() - start, 2)
-    print(f"> Done! ({total} s)\n")
+    print(f"> Data exploration done. ({total} s)\n")
 
 
     print("# ------- 3.2.1 Hypothesis testing")
     start = timer()
     ht(rest_rs)
     total = round(timer() - start, 2)
-    print(f"> Done! ({total} s)\n")
+    print(f"> Hypothesis testing done. ({total} s)\n")
 
     print("# ------------ 3.3 Loading data in the parquet format")
     start = timer()
@@ -201,7 +200,7 @@ def main():
     rspq = spark.read.parquet("/datasets/yelp/parquet/review.parquet")
     uspq = spark.read.parquet("/datasets/yelp/parquet/user.parquet")
     total = round(timer() - start, 2)
-    print(f"> Done! ({total} s)\n") 
+    print(f"> Loading parquet data done. ({total} s)\n") 
 
 if __name__ == "__main__":
     main()
