@@ -3,6 +3,7 @@ In this document, I answer the questions which are part of the assignment.
 
 # Specific DataFrame Queries
 
+## Loading the data
 I first loaded the data using:
 
 ```py
@@ -11,7 +12,10 @@ rs = spark.read.json("/datasets/yelp/review.json")
 us = spark.read.json("/datasets/yelp/user.json")
 ```
 
-I then ran the queries specified below.
+I then ran the queries specified below. Note that each of the functions returns
+`spark dataframe` object. I then got the concrete answers by calling either
+`collect()` or `count()` methods on these objects. This is to avoid unnecessary
+overhead.
 
 ## Q1
 
@@ -45,6 +49,12 @@ def q2(bs):
     return bs.filter((bs.stars == 5) & (bs.review_count >= 1000)).select("name", "stars", "review_count")
 ```
 
+Again, following the similar process as in `Q1`, I reached the following result:
+
+```
+[Row(name='Little Miss BBQ', stars=5.0, review_count=1936), Row(name='Brew Tea Bar', stars=5.0, review_count=1506)]
+```
+
 ## Q3
 ```py
 def q3(us):
@@ -56,6 +66,13 @@ def q3(us):
     return us.filter(us.review_count > 1000).select("user_id")
 ```
 
+Running `count()` on the returned object, I found out that there are `1420` such
+influencers. Therefore, below I am listing the first couple:
+
+```
+[Row(user_id='TEtzbpgA2BFBrC0y0sCbfw'), Row(user_id='zzpgpo54-_P-4rzzBtOuLQ'),...]
+```
+
 ## Q4
 
 ```py
@@ -65,14 +82,23 @@ def q4(bs, rs, a3):
     find the businesses that have been reviewed by more than 5 influencer users.
     """
 
+    import pyspark.sql.functions as f
+
     # Join business, reviews and corresponding influencers using inner join
     bs_rs = bs.join(rs, "business_id").join(a3, "user_id")
 
     # For each business, count number of unique influencers
-    bs_inf_count = bs_rs.groupby("business_id").agg(countDistinct("user_id").alias("countd"))
+    bs_inf_count = bs_rs.groupby("business_id").agg(f.countDistinct("user_id").alias("countd"))
 
     
-    return bs_inf_count.filter(bs_inf_count.countd > 5)
+    return bs_inf_count.filter(bs_inf_count.countd > 5).select("business_id")
+```
+
+Again, there are `3771` such businesses, therefore I am listing just the first few of
+them:
+
+```
+[Row(business_id='_ixV2SWDy7w8jzEAHp85qA'), Row(business_id='2UgRg5a6KmpbD_SZfhNrKg'),..
 ```
 
 ## Q5
@@ -83,9 +109,17 @@ def q5(rs, us):
     Analyze review.json and user.json to find an ordered list of users based on the average star counts they have given in all their reviews.
     """
     
-    rs_us = rs.join(us, "user_id").groupby("user_id").mean("stars").sort("avg(stars)")
+    rs_us = rs.join(us, "user_id").groupby("user_id").mean("stars").sort("avg(stars)", ascending=False)
 
     return rs_us
+```
+
+Since, the output consists of `1637138` users, I am listing the first three:
+
+```
+Row(user_id='t4dcphMzIoM9BuuYjZSB_w', avg(stars)=5.0)
+Row(user_id='mQTyWvdwn66jw-53vjkGjQ', avg(stars)=5.0)
+Row(user_id='lTVuZaTBjtBGH8lCna-3xw', avg(stars)=5.0)
 ```
 
 # Authenticity Study
