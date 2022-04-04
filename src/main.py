@@ -1,4 +1,3 @@
-
 # ---------------------- Spark setup
 from collections import defaultdict
 
@@ -54,17 +53,19 @@ def q4(bs, rs, a3):
     bs_rs = bs.join(rs, "business_id").join(a3, "user_id")
 
     # For each business, count number of unique influencers
-    bs_inf_count = bs_rs.groupby("business_id").agg(countDistinct("user_id").alias("countd"))
+    bs_inf_count = bs_rs.groupby("business_id").agg(f.countDistinct("user_id").alias("countd"))
 
     
-    return bs_inf_count.filter(bs_inf_count.countd > 5)
+    return bs_inf_count.filter(bs_inf_count.countd > 5).select("business_id")
 
 def q5(rs, us):
     """
     Analyze review.json and user.json to find an ordered list of users based on the average star counts they have given in all their reviews.
     """
     
-    rs_us = rs.join(us, "user_id").groupby("user_id").mean("stars").sort("avg(stars)")
+    rs_us = rs.join(us, "user_id").groupby("user_id").mean("stars").sort("avg(stars)", ascending=False)
+
+    return rs_us
 
 
 # ---------------------- 3.2 Authenticity Study
@@ -153,18 +154,19 @@ def ht(rest_rs):
 
 def main():
 
-    # ------------ 3.1 Specific DataFrame Queries
-    # Load all the needed data
+    print("# ------------ 3.0 Loading data")
     bs = spark.read.json("/datasets/yelp/business.json")
     rs = spark.read.json("/datasets/yelp/review.json")
     us = spark.read.json("/datasets/yelp/user.json")
+    print("> Done!")
 
-    # Run the queries
+    print("# ------------ 3.1 Specific DataFrame Queries") 
     a1 = q1(bs)
     a2 = q2(bs)
     a3 = q3(us)
     a4 = q4(bs, rs, a3)
     a5 = q5(rs, us)
+    print("> Done!")
 
     # ------------ 3.2 Authenticity Study
     # ------- 3.2.1 Data exploration
@@ -177,3 +179,5 @@ def main():
     rs = spark.read.parquet("/datasets/yelp/parquet/review.parquet")
 
 
+if __name__ == "__main__":
+    main()

@@ -98,12 +98,12 @@ Again, there are `3771` such businesses, therefore I am listing just the first f
 them:
 
 ```
-[Row(business_id='_ixV2SWDy7w8jzEAHp85qA'), Row(business_id='2UgRg5a6KmpbD_SZfhNrKg'),..
+[Row(business_id='_ixV2SWDy7w8jzEAHp85qA'), Row(business_id='2UgRg5a6KmpbD_SZfhNrKg'),..]
 ```
 
 ## Q5
 
-```
+```py
 def q5(rs, us):
     """
     Analyze review.json and user.json to find an ordered list of users based on the average star counts they have given in all their reviews.
@@ -117,9 +117,8 @@ def q5(rs, us):
 Since, the output consists of `1637138` users, I am listing the first three:
 
 ```
-Row(user_id='t4dcphMzIoM9BuuYjZSB_w', avg(stars)=5.0)
-Row(user_id='mQTyWvdwn66jw-53vjkGjQ', avg(stars)=5.0)
-Row(user_id='lTVuZaTBjtBGH8lCna-3xw', avg(stars)=5.0)
+[Row(user_id='t4dcphMzIoM9BuuYjZSB_w', avg(stars)=5.0),
+Row(user_id='mQTyWvdwn66jw-53vjkGjQ', avg(stars)=5.0), Row(user_id='lTVuZaTBjtBGH8lCna-3xw', avg(stars)=5.0), ...]
 ```
 
 # Authenticity Study
