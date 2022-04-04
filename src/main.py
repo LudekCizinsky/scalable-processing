@@ -1,4 +1,4 @@
-# ---------------------- Spark setup
+print("# ------------ 1.0 Setting up Spark")
 from collections import defaultdict
 from timeit import default_timer as timer
 
@@ -16,6 +16,8 @@ spark = SparkSession.builder \
                     .appName('ludek-cizinsky-assgn-02') \
                     .config(conf=conf) \
                     .getOrCreate()
+
+print("Done!\n")
 
 # ---------------------- 3.1 Specific DataFrame Queries implementation
 def q1(bs):
@@ -125,65 +127,67 @@ def eda(bs, rs):
 
 def ht(rest_rs):
 
-  # Add column mentioning whether the review includes some NEGATIVE words
-  rest_rs = rest_rs.withColumn("isThereNeg", rest_rs.text.rlike('(dirty)|(cheap)|(rude)'))
+    # Add column mentioning whether the review includes some NEGATIVE words
+    rest_rs = rest_rs.withColumn("isThereNeg", rest_rs.text.rlike('(dirty)|(cheap)|(rude)'))
 
-  # Add column mentioning whether the review includes some POSITIVE words
-  rest_rs = rest_rs.withColumn("isTherePos", rest_rs.text.rlike('(nice)|(fresh)|(eleg)'))
+    # Add column mentioning whether the review includes some POSITIVE words
+    rest_rs = rest_rs.withColumn("isTherePos", rest_rs.text.rlike('(nice)|(fresh)|(eleg)'))
 
-  # Get reviews with authentic language and negative/positive language
-  rest_rs_neg = rest_rs.filter((rest_rs.isThereAuth) & (rest_rs.isThereNeg))
-  rest_rs_pos = rest_rs.filter((rest_rs.isThereAuth) & (rest_rs.isTherePos))
+    # Get reviews with authentic language and negative/positive language
+    rest_rs_neg = rest_rs.filter((rest_rs.isThereAuth) & (rest_rs.isThereNeg))
+    rest_rs_pos = rest_rs.filter((rest_rs.isThereAuth) & (rest_rs.isTherePos))
 
-  # Look at the categories
-  # * All
-  cat_count_all = rest_rs.withColumn('category', f.explode(f.split(f.col('categories'), ', '))).groupBy('category').agg({"category": "count"}).withColumnRenamed("count(category)", "count_all")
+    # Look at the categories
+    # * All
+    cat_count_all = rest_rs.withColumn('category', f.explode(f.split(f.col('categories'), ', '))).groupBy('category').agg({"category": "count"}).withColumnRenamed("count(category)", "count_all")
 
-  # * Negative
-  rest_rs_neg_count = rest_rs_neg.withColumn('category', f.explode(f.split(f.col('categories'), ', '))).groupBy('category').agg({"category": "count"}).withColumnRenamed("count(category)", "c_neg")
-  rest_rs_neg_count = rest_rs_neg_count.join(cat_count_all, "category")
-  rest_rs_neg_count = rest_rs_neg_count.withColumn("normalized", (rest_rs_neg_count.c_neg/rest_rs_neg_count.count_all)*100)
+    # * Negative
+    rest_rs_neg_count = rest_rs_neg.withColumn('category', f.explode(f.split(f.col('categories'), ', '))).groupBy('category').agg({"category": "count"}).withColumnRenamed("count(category)", "c_neg")
+    rest_rs_neg_count = rest_rs_neg_count.join(cat_count_all, "category")
+    rest_rs_neg_count = rest_rs_neg_count.withColumn("normalized", (rest_rs_neg_count.c_neg/rest_rs_neg_count.count_all)*100)
 
-  # * Positive
-  rest_rs_pos_count = rest_rs_pos.withColumn('category', f.explode(f.split(f.col('categories'), ', '))).groupBy('category').agg({"category": "count"}).withColumnRenamed("count(category)", "c_pos")
-  rest_rs_pos_count = rest_rs_pos_count.join(cat_count_all, "category")
-  rest_rs_pos_count = rest_rs_pos_count.withColumn("normalized", (rest_rs_pos_count.c_pos/rest_rs_pos_count.count_all)*100)
+    # * Positive
+    rest_rs_pos_count = rest_rs_pos.withColumn('category', f.explode(f.split(f.col('categories'), ', '))).groupBy('category').agg({"category": "count"}).withColumnRenamed("count(category)", "c_pos")
+    rest_rs_pos_count = rest_rs_pos_count.join(cat_count_all, "category")
+    rest_rs_pos_count = rest_rs_pos_count.withColumn("normalized", (rest_rs_pos_count.c_pos/rest_rs_pos_count.count_all)*100)
 
-  # Save the results
-  rest_rs_neg_count.orderBy("normalized", ascending=False).toPandas().to_csv('data/ht_neg_cat_count.csv')
-  rest_rs_pos_count.orderBy("normalized", ascending=False).toPandas().to_csv('data/ht_pos_cat_count.csv')
+    # Save the results
+    rest_rs_neg_count.orderBy("normalized", ascending=False).toPandas().to_csv('data/ht_neg_cat_count.csv')
+    rest_rs_pos_count.orderBy("normalized", ascending=False).toPandas().to_csv('data/ht_pos_cat_count.csv')
 
 def main():
 
-    print("# ------------ 3.0 Loading data")
+    print("# ------------ 2.0 Loading data from json files")
     start = timer() 
     bs = spark.read.json("/datasets/yelp/business.json")
     rs = spark.read.json("/datasets/yelp/review.json")
     us = spark.read.json("/datasets/yelp/user.json")
     total = round(timer() - start, 2)
-    print(f"> Done! ({total} s)")
+    print(f"> Done! ({total} s)\n")
 
     print("# ------------ 3.1 Specific DataFrame Queries") 
+    start = timer()
     a1 = q1(bs)
     a2 = q2(bs)
     a3 = q3(us)
     a4 = q4(bs, rs, a3)
     a5 = q5(rs, us)
-    print("> Done!")
+    total = round(timer() - start, 2)
+    print(f"> Done! ({total} s)\n")
 
     print("# ------------ 3.2 Authenticity Study")
     print("# ------- 3.2.1 Data exploration")
     start = timer() 
     rest_rs = eda(bs, rs)
     total = round(timer() - start, 2)
-    print(f"> Done! ({total} s)")
+    print(f"> Done! ({total} s)\n")
 
 
     print("# ------- 3.2.1 Hypothesis testing")
     start = timer()
     ht(rest_rs)
     total = round(timer() - start, 2)
-    print(f"> Done! ({total} s)")
+    print(f"> Done! ({total} s)\n")
 
     print("# ------------ 3.3 Loading data in the parquet format")
     start = timer()
@@ -191,7 +195,7 @@ def main():
     rspq = spark.read.parquet("/datasets/yelp/parquet/review.parquet")
     uspq = spark.read.parquet("/datasets/yelp/parquet/user.parquet")
     total = round(timer() - start, 2)
-    print(f"> Done! ({total} s)") 
+    print(f"> Done! ({total} s)\n") 
 
 if __name__ == "__main__":
     main()
